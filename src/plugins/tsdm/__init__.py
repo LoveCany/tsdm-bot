@@ -9,6 +9,7 @@ from .account import *
 from .utils import *
 
 tsdm_login = on_command("tsdm_login", rule=to_me(), priority=1)
+tsdm_refresh = on_command("tsdm_refresh", rule=to_me(), priority=2)
 tsdm_get = on_command("tsdm_get", rule=to_me(), priority=5)
 
 status = on_start()
@@ -37,6 +38,23 @@ async def handle_verify_code(verify_code: str = ArgPlainText("verify_code")):
             MessageSegment.text(login_response)
         ])
         await tsdm_login.finish(message)
+
+
+@tsdm_refresh.handle()
+async def handle_refresh():
+    global status
+    if not status:
+        await tsdm_refresh.finish("未登录")
+    else:
+        refresh_response = account.refresh_cookie()
+        if refresh_response == '':
+            await tsdm_refresh.finish("刷新成功")
+        else:
+            message = Message([
+                MessageSegment.text("刷新失败"),
+                MessageSegment.text(refresh_response)
+            ])
+            await tsdm_refresh.finish(message)
 
 
 @tsdm_get.handle()
