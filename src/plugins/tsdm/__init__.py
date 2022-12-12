@@ -70,7 +70,6 @@ async def handle_first_get(matcher: Matcher, args: Message = CommandArg()):
 
 @tsdm_get.got("tid", prompt="请输入帖子ID")
 async def handle_tid(tid: Message = Arg(), tid_id = ArgPlainText("tid")):
-    # aoba说op权限下不需要购买就可以直接获得thread全文，故不再调用
     # account.purchase(tid_id)
     forum_data = account.get_forum_data(tid_id)
     if forum_data:

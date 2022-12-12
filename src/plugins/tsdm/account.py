@@ -138,7 +138,6 @@ def get_formhash(tid: str) -> str:
         return 'Exception: {}'.format(e)
 
 
-# aoba说op权限下不需要购买就可以直接获得thread全文，故不再调用
 def purchase(tid: str) -> str:
     url = tsdm_config.tsdm_base_url + '/forum.php'
     params = {
