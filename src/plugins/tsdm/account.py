@@ -57,7 +57,7 @@ def login(verify_code: str) -> str:
         'username': tsdm_config.tsdm_username,
         'password': tsdm_config.tsdm_password,
         'tsdm_verify': verify_code,
-        'fastkloginfield': 'uid',
+        'fastloginfield': 'uid',
         'questionid': tsdm_config.tsdm_questionid,
         'answer': tsdm_config.tsdm_answer,
     }
