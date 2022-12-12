@@ -11,7 +11,5 @@ class Config(BaseModel):
     tsdm_password: str = ""
     tsdm_questionid: str = "0"
     tsdm_answer: str = ""
-    pastebin_api_key: str = ""
-    pastebin_user_key: str = ""
 
 tsdm_config = Config.parse_obj(get_driver().config)

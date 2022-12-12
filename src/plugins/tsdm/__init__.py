@@ -74,7 +74,7 @@ async def handle_tid(tid: Message = Arg(), tid_id = ArgPlainText("tid")):
     # account.purchase(tid_id)
     forum_data = account.get_forum_data(tid_id)
     if forum_data:
-        link = utils.pastebin_send(forum_data, 'html5')
+        link = utils.pastebin_send(forum_data)
         await tsdm_get.send(link)
     else:
         await tsdm_get.finish("获取失败")

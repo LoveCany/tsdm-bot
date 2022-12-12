@@ -3,7 +3,7 @@ import json
 from .config import tsdm_config
 import requests
 from requests.utils import dict_from_cookiejar
-from requests_toolbelt import MultipartEncoder
+import privatebinapi
 from requests.cookies import RequestsCookieJar
 from nonebot.log import logger
 from requests.utils import cookiejar_from_dict
@@ -51,24 +51,12 @@ def load_cookies() -> RequestsCookieJar:
         return RequestsCookieJar()
 
 
-def pastebin_send(content: str, format: str) -> str:
-    url = 'https://pastebin.com/api/api_post.php'
-    data = {
-        'api_dev_key': tsdm_config.pastebin_api_key,
-        'api_user_key': tsdm_config.pastebin_user_key,
-        'api_paste_code': content,
-        'api_option': 'paste',
-        'api_paste_private': '2', # private
-        'api_paste_expire_date': '1D',
-        'api_paste_format': format,
-    }
-    formdata = MultipartEncoder(fields=data)
-    headers = {
-        'Content-Type': formdata.content_type,
-    }
+def pastebin_send(content: str) -> str:
+    url = 'https://paste.to/'
     try:
-        response = requests.post(url, data=formdata, headers=headers)
-        return response.text
+        response = privatebinapi.send(url, text=content)
+        logger.info(response)
+        return response["full_url"]
     except Exception as e:
         logger.error('Pastebin send failed: {}'.format(e))
         return ''
