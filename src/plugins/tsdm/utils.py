@@ -1,7 +1,6 @@
 import os
 import json
 from .config import tsdm_config
-import requests
 from requests.utils import dict_from_cookiejar
 import privatebinapi
 from requests.cookies import RequestsCookieJar

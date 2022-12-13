@@ -8,9 +8,9 @@ from nonebot.adapters.onebot.v11 import Message
 from .account import *
 from .utils import *
 
-tsdm_login = on_command("tsdm_login", rule=to_me(), priority=1)
-tsdm_refresh = on_command("tsdm_refresh", rule=to_me(), priority=2)
-tsdm_get = on_command("tsdm_get", rule=to_me(), priority=5)
+tsdm_login = on_command("tsdm_login", aliases={"TSDM登录"}, rule=to_me(), priority=1)
+tsdm_refresh = on_command("tsdm_refresh", aliases={"TSDM刷新"}, rule=to_me(), priority=2)
+tsdm_get = on_command("tsdm_get", aliases={"嫖", "给点"}, rule=to_me(), priority=5)
 
 status = on_start()
 
