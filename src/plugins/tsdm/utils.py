@@ -7,6 +7,7 @@ import privatebinapi
 from requests.cookies import RequestsCookieJar
 from nonebot.log import logger
 from requests.utils import cookiejar_from_dict
+from bs4 import BeautifulSoup as bs
 
 
 def check_path(path):
@@ -54,6 +55,7 @@ def load_cookies() -> RequestsCookieJar:
 def pastebin_send(content: str) -> str:
     url = 'https://paste.to/'
     try:
+        content = bs(content).get_text()
         response = privatebinapi.send(url, text=content, formatting="syntaxhighlighting", expiration="1day")
         logger.info(response)
         return response["full_url"]
