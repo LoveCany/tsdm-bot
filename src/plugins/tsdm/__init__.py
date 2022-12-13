@@ -11,8 +11,22 @@ from .utils import *
 tsdm_login = on_command("tsdm_login", aliases={"TSDM登录"}, rule=to_me(), priority=1)
 tsdm_refresh = on_command("tsdm_refresh", aliases={"TSDM刷新"}, rule=to_me(), priority=2)
 tsdm_get = on_command("tsdm_get", aliases={"嫖", "给点"}, rule=to_me(), priority=5)
+tsdm_help = on_command("tsdm_help", aliases={"帮助", "help"}, rule=to_me(), priority=10)
 
 status = on_start()
+
+
+@tsdm_help.handle()
+async def handle_help():
+    message = Message([
+        MessageSegment.text("如何使用tsdm-bot："),
+        MessageSegment.text("请注意，调用bot口令需要@出机器人，并在口令前加入$\{COMMAND_START\}"),
+        MessageSegment.text("tsdm_help (alias: 帮助/help) - 查看帮助"),
+        MessageSegment.text("tsdm_login (alias: TSDM登录) - 登录账号，需要根据指引输入验证码"),
+        MessageSegment.text("tsdm_refresh (alias: TSDM刷新) - 刷新账号cookie"),
+        MessageSegment.text("tsdm_get (alias: 嫖/给点) - 获取TSDM资源，需要提供对应的tid"),
+    ])
+    await tsdm_help.finish(message)
 
 
 @tsdm_login.handle()
