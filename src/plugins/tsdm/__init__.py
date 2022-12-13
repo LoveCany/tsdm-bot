@@ -19,11 +19,11 @@ status = on_start()
 @tsdm_help.handle()
 async def handle_help():
     message = Message([
-        MessageSegment.text("如何使用tsdm-bot："),
-        MessageSegment.text("请注意，调用bot口令需要@出机器人，并在口令前加入$\{COMMAND_START\}"),
-        MessageSegment.text("tsdm_help (alias: 帮助/help) - 查看帮助"),
-        MessageSegment.text("tsdm_login (alias: TSDM登录) - 登录账号，需要根据指引输入验证码"),
-        MessageSegment.text("tsdm_refresh (alias: TSDM刷新) - 刷新账号cookie"),
+        MessageSegment.text("如何使用tsdm-bot：\n"),
+        MessageSegment.text("请注意，在群组中调用bot口令需要@出机器人，并在口令前加入$\{COMMAND_START\}\n"),
+        MessageSegment.text("tsdm_help (alias: 帮助/help) - 查看帮助\n"),
+        MessageSegment.text("tsdm_login (alias: TSDM登录) - 登录账号，需要根据指引输入验证码\n"),
+        MessageSegment.text("tsdm_refresh (alias: TSDM刷新) - 刷新账号cookie\n"),
         MessageSegment.text("tsdm_get (alias: 嫖/给点) - 获取TSDM资源，需要提供对应的tid"),
     ])
     await tsdm_help.finish(message)
