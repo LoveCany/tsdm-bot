@@ -54,8 +54,8 @@ def load_cookies() -> RequestsCookieJar:
 def pastebin_send(content: str) -> str:
     url = 'https://paste.to/'
     try:
-        content = bs(content).get_text()
-        response = privatebinapi.send(url, text=content, formatting="syntaxhighlighting", expiration="1day")
+        new_content = bs(content).get_text() + '\n' + content
+        response = privatebinapi.send(url, text=new_content, formatting="syntaxhighlighting", expiration="1day")
         logger.info(response)
         return response["full_url"]
     except Exception as e:
