@@ -5,6 +5,7 @@ from nonebot.matcher import Matcher
 from nonebot.params import Arg, ArgPlainText, CommandArg
 from nonebot.adapters.onebot.v11 import Message
 
+
 from .account import *
 from .utils import *
 
@@ -87,7 +88,8 @@ async def handle_tid(tid: Message = Arg(), tid_id = ArgPlainText("tid")):
     # account.purchase(tid_id)
     forum_data = account.get_forum_data(tid_id)
     if forum_data:
-        link = utils.pastebin_send(forum_data)
-        await tsdm_get.send(link)
+        link_raw = utils.pastebin_send(forum_data, False)
+        link_html = utils.pastebin_send(forum_data, True)
+        await tsdm_get.send(f'解析: {link_html}\n源代码: {link_raw}')
     else:
         await tsdm_get.finish("获取失败")

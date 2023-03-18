@@ -51,12 +51,15 @@ def load_cookies() -> RequestsCookieJar:
         return RequestsCookieJar()
 
 
-def pastebin_send(content: str) -> str:
+def pastebin_send(content: str, get_text: bool) -> str:
     url = 'https://paste.to/'
     try:
-        content = bs(content).get_text()
-        response = privatebinapi.send(url, text=content, formatting="syntaxhighlighting", expiration="1day")
-        logger.info(response)
+        if get_text:
+            text = bs(content).get_text()
+            response = privatebinapi.send(url, text=text, formatting="none", expiration="1day")
+        else:
+            response = privatebinapi.send(url, text=content, formatting="syntaxhighlighting", expiration="1day")
+        logger.info(response) # Python中if-else不构成作用域，response可以直接在外部用
         return response["full_url"]
     except Exception as e:
         logger.error('Pastebin send failed: {}'.format(e))
