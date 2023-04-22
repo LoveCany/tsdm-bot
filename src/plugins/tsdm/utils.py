@@ -29,7 +29,6 @@ def save_file(file_path, file_name, content):
         f.write(content)
 
 
-
 def save_cookies(cookies: RequestsCookieJar):
     cookies_dict = dict_from_cookiejar(cookies)
     path = tsdm_config.tsdm_data_dir
@@ -56,10 +55,10 @@ def pastebin_send(content: str, get_text: bool) -> str:
     try:
         if get_text:
             text = bs(content).get_text()
-            response = privatebinapi.send(url, text=text, formatting="none", expiration="1day")
+            response = privatebinapi.send(url, text=text, formatting="plaintext", expiration="1day")
         else:
             response = privatebinapi.send(url, text=content, formatting="syntaxhighlighting", expiration="1day")
-        logger.info(response) # Python中if-else不构成作用域，response可以直接在外部用
+        logger.info(response)  # Python中if-else不构成作用域，response可以直接在外部用
         return response["full_url"]
     except Exception as e:
         logger.error('Pastebin send failed: {}'.format(e))
