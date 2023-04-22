@@ -7,8 +7,10 @@ import os
 import json
 from requests_toolbelt import MultipartEncoder
 
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 ' \
+             'Safari/537.36'
 SESSION = requests.Session()
+
 
 def on_start():
     utils.check_path(tsdm_config.tsdm_data_dir)
@@ -103,6 +105,7 @@ def refresh_cookie() -> str:
     except Exception as e:
         logger.error('Refresh cookie failed.')
         return 'Exception: {}'.format(e)
+
 
 def get_formhash(tid: str) -> str:
     url = tsdm_config.tsdm_base_url + '/forum.php'

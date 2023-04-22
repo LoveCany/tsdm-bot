@@ -12,4 +12,5 @@ class Config(BaseModel):
     tsdm_questionid: str = "0"
     tsdm_answer: str = ""
 
+
 tsdm_config = Config.parse_obj(get_driver().config)
