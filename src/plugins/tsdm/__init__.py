@@ -5,7 +5,6 @@ from nonebot.matcher import Matcher
 from nonebot.params import Arg, ArgPlainText, CommandArg
 from nonebot.adapters.onebot.v11 import Message
 
-
 from .account import *
 from .utils import *
 
@@ -46,7 +45,7 @@ async def handle_verify_code(verify_code: str = ArgPlainText("verify_code")):
     if login_response == '':
         status = True
         await tsdm_login.finish("登录成功")
-            
+
     else:
         message = Message([
             MessageSegment.text("登录失败"),
@@ -84,7 +83,7 @@ async def handle_first_get(matcher: Matcher, args: Message = CommandArg()):
 
 
 @tsdm_get.got("tid", prompt="请输入帖子ID")
-async def handle_tid(tid: Message = Arg(), tid_id = ArgPlainText("tid")):
+async def handle_tid(tid: Message = Arg(), tid_id=ArgPlainText("tid")):
     # account.purchase(tid_id)
     forum_data = account.get_forum_data(tid_id)
     if forum_data:
