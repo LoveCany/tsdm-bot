@@ -190,7 +190,9 @@ def get_forum_data(tid: str) -> str:
             resp = response.text
             resp_json = json.loads(resp, strict=False)
             if resp_json['thread_paid'] == 0:
-                purchase(tid)
+                res = purchase(tid)
+                if res != '':
+                    return resp_json['postlist'][0]['message']
                 return get_forum_data(tid)
             return resp_json['postlist'][0]['message']
         else:
