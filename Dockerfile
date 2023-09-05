@@ -12,7 +12,7 @@ ENV PATH="${PATH}:/root/.local/bin"
 
 RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
+FROM python:3.9
 
 WORKDIR /app
 
@@ -23,3 +23,5 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 RUN rm requirements.txt
 
 COPY ./ /app/
+
+CMD ["python", "bot.py"]

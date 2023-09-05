@@ -13,6 +13,8 @@ requests-toolbelt = "^0.10.1"
 nonebot-adapter-red = "^0.1.0"
 privatebinapi = "^1.0.0"
 urllib3 = "^1.26.15"
+httpx = "^0.24.1"
+websockets = "^11.0.3"
 
 [tool.poetry.dev-dependencies]
 nb-cli = "^1.2.3"

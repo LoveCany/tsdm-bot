@@ -10,5 +10,6 @@ services:
       - MAX_WORKERS=1 # 如果你有多个QQ，且存在 self_id 指定，多个 worker 会导致无法找到其他 websocket 连接
     volumes:
       - app-data:/app/data
+      - ./.env.prod:/app/.env.prod
 volumes:
   app-data:
