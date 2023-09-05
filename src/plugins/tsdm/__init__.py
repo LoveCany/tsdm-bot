@@ -22,7 +22,7 @@ async def handle_help():
         MessageSegment.text("如何使用tsdm-bot：\n"),
         MessageSegment.text("请注意，在群组中调用bot口令需要@出机器人，并在口令前加入$\{COMMAND_START\}\n"),
         MessageSegment.text("tsdm_help (alias: 帮助/help) - 查看帮助\n"),
-        MessageSegment.text("tsdm_login (alias: TSDM登录) - 登录账号，需要根据指引输入验证码\n"),
+        MessageSegment.text("tsdm_login (alias: TSDM登录) - 登录账号，后面不带验证码则会返回验证码对应base64，复制消息直接在浏览器地址栏打开可查看验证码，带验证码则直接进行登录\n"),
         MessageSegment.text("tsdm_refresh (alias: TSDM刷新) - 刷新账号cookie\n"),
         MessageSegment.text("tsdm_get (alias: 嫖/给点) - 获取TSDM资源，需要提供对应的tid"),
     ])
@@ -52,31 +52,6 @@ async def handle_first_receive(matcher: Matcher, args: Message = CommandArg()):
             await tsdm_login.finish(MessageSegment.text(verify_code))
         else:
             await tsdm_login.finish("获取验证码失败")
-
-# @tsdm_login.handle()
-# async def handle_first_receive():
-#     verify_code = get_verify_code_img()
-#     if verify_code:
-#         await tsdm_login.send(MessageSegment.text("验证码"))
-#     else:
-#         await tsdm_login.finish("获取验证码失败")
-
-
-# @tsdm_login.got("verify_code", prompt="请输入验证码")
-# async def handle_verify_code(verify_code: str = ArgPlainText("verify_code")):
-#     global status
-#     login_response = account.login(verify_code)
-#     if login_response == '':
-#         status = True
-#         await tsdm_login.finish("登录成功")
-
-#     else:
-#         message = Message([
-#             MessageSegment.text("登录失败"),
-#             MessageSegment.text(login_response)
-#         ])
-#         await tsdm_login.finish(message)
-
 
 @tsdm_refresh.handle()
 async def handle_refresh():

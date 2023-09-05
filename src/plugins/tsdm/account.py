@@ -39,7 +39,6 @@ def get_verify_code_img() -> str:
         filename = response.headers['X-Discuz-Session-Id'] + '.png'
         utils.save_file('verify_code', filename, response.content)
         logger.info('Verify code saved to data/verify_code/{}'.format(filename))
-        # return os.path.abspath(os.path.join(tsdm_config.tsdm_data_dir, 'verify_code', filename))
         return "data:image/png;base64,{}".format(base64.b64encode(response.content).decode())
     except Exception as e:
         logger.error('Get verify code failed: {}'.format(e))
