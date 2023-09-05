@@ -5,6 +5,7 @@ from nonebot.log import logger
 from bs4 import BeautifulSoup
 import os
 import json
+import base64
 from requests_toolbelt import MultipartEncoder
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 ' \
@@ -38,7 +39,8 @@ def get_verify_code_img() -> str:
         filename = response.headers['X-Discuz-Session-Id'] + '.png'
         utils.save_file('verify_code', filename, response.content)
         logger.info('Verify code saved to data/verify_code/{}'.format(filename))
-        return os.path.abspath(os.path.join(tsdm_config.tsdm_data_dir, 'verify_code', filename))
+        # return os.path.abspath(os.path.join(tsdm_config.tsdm_data_dir, 'verify_code', filename))
+        return "data:image/png;base64,{}".format(base64.b64encode(response.content).decode())
     except Exception as e:
         logger.error('Get verify code failed: {}'.format(e))
         return ''

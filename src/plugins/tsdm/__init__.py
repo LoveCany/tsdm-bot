@@ -1,17 +1,17 @@
 from nonebot import on_command
-from nonebot.adapters.onebot.v11.message import MessageSegment
+from nonebot.adapters.red.message import MessageSegment
 from nonebot.rule import to_me
 from nonebot.matcher import Matcher
 from nonebot.params import Arg, ArgPlainText, CommandArg
-from nonebot.adapters.onebot.v11 import Message
+from nonebot.adapters.red import Message
 
 from .account import *
 from .utils import *
 
-tsdm_login = on_command("tsdm_login", aliases={"TSDM登录"}, rule=to_me(), priority=1)
-tsdm_refresh = on_command("tsdm_refresh", aliases={"TSDM刷新"}, rule=to_me(), priority=2)
-tsdm_get = on_command("tsdm_get", aliases={"嫖", "给点"}, rule=to_me(), priority=5)
-tsdm_help = on_command("tsdm_help", aliases={"帮助", "help"}, rule=to_me(), priority=10)
+tsdm_login = on_command("tsdm_login", aliases={"TSDM登录"}, priority=1)
+tsdm_refresh = on_command("tsdm_refresh", aliases={"TSDM刷新"}, priority=2)
+tsdm_get = on_command("tsdm_get", aliases={"嫖", "给点"}, priority=5)
+tsdm_help = on_command("tsdm_help", aliases={"帮助", "help"}, priority=10)
 
 status = on_start()
 
@@ -30,28 +30,52 @@ async def handle_help():
 
 
 @tsdm_login.handle()
-async def handle_first_receive():
-    verify_code = get_verify_code_img()
-    if verify_code:
-        await tsdm_login.send(MessageSegment.image("file:///{}".format(verify_code)))
+async def handle_first_receive(matcher: Matcher, args: Message = CommandArg()):
+    code = args.extract_plain_text()
+    if len(code) > 0:
+        global status
+        login_response = account.login(code)
+        if login_response == '':
+            status = True
+            await tsdm_login.finish("登录成功")
+
+        else:
+            message = Message([
+                MessageSegment.text("登录失败"),
+                MessageSegment.text(login_response)
+            ])
+            await tsdm_login.finish(message)
     else:
-        await tsdm_login.finish("获取验证码失败")
+        verify_code = get_verify_code_img()
+        if verify_code:
+            await tsdm_login.send(MessageSegment.text("验证码使用浏览器打开"))
+            await tsdm_login.finish(MessageSegment.text(verify_code))
+        else:
+            await tsdm_login.finish("获取验证码失败")
+
+# @tsdm_login.handle()
+# async def handle_first_receive():
+#     verify_code = get_verify_code_img()
+#     if verify_code:
+#         await tsdm_login.send(MessageSegment.text("验证码"))
+#     else:
+#         await tsdm_login.finish("获取验证码失败")
 
 
-@tsdm_login.got("verify_code", prompt="请输入验证码")
-async def handle_verify_code(verify_code: str = ArgPlainText("verify_code")):
-    global status
-    login_response = account.login(verify_code)
-    if login_response == '':
-        status = True
-        await tsdm_login.finish("登录成功")
+# @tsdm_login.got("verify_code", prompt="请输入验证码")
+# async def handle_verify_code(verify_code: str = ArgPlainText("verify_code")):
+#     global status
+#     login_response = account.login(verify_code)
+#     if login_response == '':
+#         status = True
+#         await tsdm_login.finish("登录成功")
 
-    else:
-        message = Message([
-            MessageSegment.text("登录失败"),
-            MessageSegment.text(login_response)
-        ])
-        await tsdm_login.finish(message)
+#     else:
+#         message = Message([
+#             MessageSegment.text("登录失败"),
+#             MessageSegment.text(login_response)
+#         ])
+#         await tsdm_login.finish(message)
 
 
 @tsdm_refresh.handle()
