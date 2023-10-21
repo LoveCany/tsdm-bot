@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import nonebot
-from nonebot.adapters.red import Adapter as RedAdapter
+from nonebot.adapters.telegram import Adapter as TelegramAdapter
 
 # Custom your logger
 # 
@@ -20,7 +20,7 @@ logger.add(
 nonebot.init()
 
 driver = nonebot.get_driver()
-driver.register_adapter(RedAdapter)
+driver.register_adapter(TelegramAdapter)
 
 # nonebot.load_builtin_plugins("echo")
 

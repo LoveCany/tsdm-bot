@@ -25,7 +25,7 @@ def on_start():
 
 
 # Get verify code image and return its filename
-def get_verify_code_img() -> str:
+def get_verify_code_img() -> bytes:
     url = tsdm_config.tsdm_base_url + '/plugin.php'
     params = {
         'id': 'oracle:verify',
@@ -37,12 +37,10 @@ def get_verify_code_img() -> str:
         response = SESSION.get(url, params=params, headers=headers)
         # Response is an image, which should be saved to data dir
         filename = response.headers['X-Discuz-Session-Id'] + '.png'
-        utils.save_file('verify_code', filename, response.content)
-        logger.info('Verify code saved to data/verify_code/{}'.format(filename))
-        return "data:image/png;base64,{}".format(base64.b64encode(response.content).decode())
+        return response.content
     except Exception as e:
         logger.error('Get verify code failed: {}'.format(e))
-        return ''
+        return b''
 
 
 # Get actual verify code from user and login
@@ -159,7 +157,7 @@ def purchase(tid: str) -> str:
             url, params=params, data=formdata, headers=headers)
         if response.status_code == 200:
             res = response.text
-            if res.find('主题购买成功') == -1 or res.find('抱歉，您已购买过此主题，请勿重复付费') == -1:
+            if res.find('主题购买成功') != -1 and res.find('抱歉，您已购买过此主题，请勿重复付费') != -1:
                 logger.error('Purchase failed.')
                 return res
             logger.info('Purchase successful.')
