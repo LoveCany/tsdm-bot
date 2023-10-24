@@ -1,6 +1,5 @@
 from nonebot import on_command
 from nonebot.adapters.telegram.message import File
-from nonebot.rule import to_me
 from nonebot.matcher import Matcher
 from nonebot.params import Arg, ArgPlainText, CommandArg
 from nonebot.adapters.telegram import Message
@@ -25,6 +24,8 @@ async def handle_help():
 @tsdm_login.handle()
 async def handle_first_receive(event: MessageEvent, matcher: Matcher, args: Message = CommandArg()):
     code = args.extract_plain_text()
+    if code.startswith("@"):
+        code = code.split(" ")[1]
     if len(code) > 0:
         global status
         login_response = account.login(code)
@@ -62,12 +63,18 @@ async def handle_first_get(event: MessageEvent, matcher: Matcher, args: Message 
     else:
         tid = args.extract_plain_text()
         if tid:
-            matcher.set_arg("tid", args)
+            if not tid.startswith("@") or 3 > len(tid.split(" ")) > 1:
+                matcher.set_arg("tid", args)
 
 
 @tsdm_get.got("tid", prompt="请输入帖子ID")
 async def handle_tid(event: MessageEvent, tid: Message = Arg(), tid_id=ArgPlainText("tid")):
-    forum_data = account.get_forum_data(tid_id)
+    real_tid_id = ""
+    if tid_id.startswith("@"):
+        real_tid_id = tid_id.split(" ")[1]
+    else:
+        real_tid_id = tid_id
+    forum_data = account.get_forum_data(real_tid_id)
     if forum_data:
         link_raw = utils.pastebin_send(forum_data, False)
         link_html = utils.pastebin_send(forum_data, True)
