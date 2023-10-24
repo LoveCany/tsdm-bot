@@ -54,7 +54,7 @@ def pastebin_send(content: str, get_text: bool) -> str:
     url = 'https://paste.to/'
     try:
         if get_text:
-            text = bs(content).get_text()
+            text = bs(content, features="html.parser").get_text()
             response = privatebinapi.send(url, text=text, formatting="plaintext", expiration="1day")
         else:
             response = privatebinapi.send(url, text=content, formatting="syntaxhighlighting", expiration="1day")

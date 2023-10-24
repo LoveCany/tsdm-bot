@@ -5,6 +5,7 @@ from nonebot.log import logger
 from bs4 import BeautifulSoup
 import os
 import json
+import base64
 from requests_toolbelt import MultipartEncoder
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 ' \
@@ -24,7 +25,7 @@ def on_start():
 
 
 # Get verify code image and return its filename
-def get_verify_code_img() -> str:
+def get_verify_code_img() -> bytes:
     url = tsdm_config.tsdm_base_url + '/plugin.php'
     params = {
         'id': 'oracle:verify',
@@ -36,12 +37,10 @@ def get_verify_code_img() -> str:
         response = SESSION.get(url, params=params, headers=headers)
         # Response is an image, which should be saved to data dir
         filename = response.headers['X-Discuz-Session-Id'] + '.png'
-        utils.save_file('verify_code', filename, response.content)
-        logger.info('Verify code saved to data/verify_code/{}'.format(filename))
-        return os.path.abspath(os.path.join(tsdm_config.tsdm_data_dir, 'verify_code', filename))
+        return response.content
     except Exception as e:
         logger.error('Get verify code failed: {}'.format(e))
-        return ''
+        return b''
 
 
 # Get actual verify code from user and login
@@ -69,7 +68,8 @@ def login(verify_code: str) -> str:
         'Content-Type': formdata.content_type,
     }
     try:
-        response = SESSION.post(url, params=params, data=formdata, headers=headers)
+        response = SESSION.post(
+            url, params=params, data=formdata, headers=headers)
         if response.json()["status"] == 0:
             logger.info('Login successful.')
             utils.save_cookies(SESSION.cookies)
@@ -107,13 +107,13 @@ def refresh_cookie() -> str:
         return 'Exception: {}'.format(e)
 
 
-def get_formhash(tid: str) -> str:
+def get_formhash() -> str:
     url = tsdm_config.tsdm_base_url + '/forum.php'
     params = {
-        'mod': 'misc',
-        'action': 'pay',
-        'mobile': 'yes',
-        'tid': tid,
+        'mod': 'post',
+        'action': 'newthread',
+        'fid': '4',
+        'tsdmapp': 1,
     }
     headers = {
         'User-Agent': USER_AGENT,
@@ -121,18 +121,8 @@ def get_formhash(tid: str) -> str:
     try:
         response = SESSION.get(url, params=params, headers=headers)
         if response.status_code == 200:
-            res = response.text
-            soup = BeautifulSoup(res, 'html.parser')
-            formhash = soup.find_all('input', type='hidden', attrs={'name': 'formhash'})
-            if len(formhash) == 1:
-                formhash = formhash[0]['value']
-                logger.info('Get formhash successful: {}.'.format(formhash))
-                return formhash
-            else:
-                res = response.json()
-                if res['status'] == -1:
-                    logger.error('Get formhash failed: {}'.format(res['message']))
-                return ''
+            res = response.json()
+            return res['formhash']
         else:
             logger.error('Failed to fetch formhash.')
             return response.text
@@ -149,14 +139,13 @@ def purchase(tid: str) -> str:
         'mobile': 'yes',
         'paysubmit': 'yes',
         'infloat': 'yes',
-        'tsdmapp': 3,
-        'tid': tid,
+        'inajax': 1
     }
     data = {
-        'formhash': get_formhash(tid),
-        'referer': 'https://www.tsdm39.net/./',
+        'formhash': get_formhash(),
+        'referer': tsdm_config.tsdm_base_url + '/forum.php?mod=viewthread&tid=' + tid,
         'tid': tid,
-        'paysubmit': 'true',
+        'handlekey': 'pay',
     }
     formdata = MultipartEncoder(fields=data)
     headers = {
@@ -164,11 +153,17 @@ def purchase(tid: str) -> str:
         'Content-Type': formdata.content_type,
     }
     try:
-        response = SESSION.get(url, params=params, data=formdata, headers=headers)
+        response = SESSION.post(
+            url, params=params, data=formdata, headers=headers)
         if response.status_code == 200:
+            res = response.text
+            if res.find('主题购买成功') != -1 and res.find('抱歉，您已购买过此主题，请勿重复付费') != -1:
+                logger.error('Purchase failed.')
+                return res
             logger.info('Purchase successful.')
             return ''
         else:
+            logger.error(response)
             logger.error('Purchase failed.')
             return response.text
     except Exception as e:
@@ -193,6 +188,11 @@ def get_forum_data(tid: str) -> str:
             logger.info('Get forum data successful.')
             resp = response.text
             resp_json = json.loads(resp, strict=False)
+            if resp_json['thread_paid'] == 0:
+                res = purchase(tid)
+                if res != '':
+                    return resp_json['postlist'][0]['message']
+                return get_forum_data(tid)
             return resp_json['postlist'][0]['message']
         else:
             logger.error('Get forum data failed.')
